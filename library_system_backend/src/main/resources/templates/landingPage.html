@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>landing</title>
+</head>
+<body>
+<h3>도서관 Landing</h3>
+
+<table>
+    <tr>
+        <th>메뉴</th>
+    </tr>
+    <tr>
+        <td><button onclick="goSearch()">통합자료검색</button></td>
+    </tr>
+</table>
+
+</body>
+<script>
+    const goSearch = () => {
+        location.href = "/search";
+    }
+</script>
+</html>

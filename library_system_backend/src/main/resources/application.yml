@@ -1,0 +1,22 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: demo
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/db_library?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    #    db-codingrecipe : db
+    username: user_library
+    #    user-codingrecipe : user
+    password: 1234
+  thymeleaf:
+    cache: false
+
+  jpa:
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+      format_sql: true

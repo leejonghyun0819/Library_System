@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>search</title>
+</head>
+<body>
+
+<table>
+    <tr>
+        <th>검색어를 입력하시오</th>
+    </tr>
+    <tr>
+        <td>
+            <form th:action="@{/search}" method="get">
+                <input type="text" name="q" th:value="${q}">
+                <button type="submit">검색</button>
+            </form>
+        </td>
+    </tr>
+</table>
+
+<hr>
+
+<table>
+    <tr>
+        <th>도서명</th>
+        <th>저자</th>
+        <th>출판사</th>
+        <th>카테고리</th>
+        <th>ISBN</th>
+        <th>imageurl</th>
+    </tr>
+
+    <tr th:each="book: ${searchResult}">
+        <td><a th:href="@{|/book/${book.id}|}" th:text="${book.title}"></a></td>
+        <td th:text="${book.author}"></td>
+        <td th:text="${book.publisher}"></td>
+        <td th:text="${book.category}"></td>
+        <td th:text="${book.isbn}"></td>
+        <td th:text="${book.imageurl}"></td>
+
+    </tr>
+</table>
+
+<button onclick="goHome()">홈</button>
+
+</body>
+<script>
+    const goHome = () => {
+        location.href = "/";
+    }
+</script>
+</html>

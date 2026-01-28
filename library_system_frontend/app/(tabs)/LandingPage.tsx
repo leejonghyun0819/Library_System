@@ -1,202 +1,223 @@
-import { Calendar, Home, Search, User } from 'lucide-react-native';
 import React from 'react';
 import {
-    Dimensions,
-    SafeAreaView,
-    ScrollView,
     StyleSheet,
+    View,
     Text,
     TextInput,
     TouchableOpacity,
-    View,
+    SafeAreaView,
+    ScrollView,
+    Image,
+    ImageBackground,
 } from 'react-native';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import Svg, { Polygon } from 'react-native-svg';
+import { Fonts } from '@/constants/theme';
 
-const { width } = Dimensions.get('window');
+// 육각형 메뉴 아이템 컴포넌트
+const HexagonMenu = ({ icon, title }: { icon: string; title: string }) => (
+    <TouchableOpacity style={styles.menuItem}>
+        <View style={styles.hexagonWrapper}>
+            <Svg height="80" width="80" viewBox="0 0 100 100" style={styles.hexagonSvg}>
+                <Polygon points="50,5 95,25 95,75 50,95 5,75 5,25" fill="white" stroke="#EAEAEA" strokeWidth="2" />
+            </Svg>
+            <View style={styles.iconOverlay}>
+                <MaterialCommunityIcons name={icon as any} size={32} color="#333" />
+            </View>
+        </View>
+        <Text style={styles.menuText}>{title}</Text>
+    </TouchableOpacity>
+);
 
-// 메뉴 데이터 타입 정의
-interface MenuItem {
-    id: number;
-    title: string;
-}
+export default function LibraryMainScreen() {
+    const menuItems = [
+        { id: 1, title: '통합자료검색', icon: 'magnify' },
+        { id: 2, title: '신착자료', icon: 'book-plus-outline' },
+        { id: 3, title: '기본정보', icon: 'account-box-outline' },
+        { id: 4, title: '인기순위', icon: 'crown-outline' },
+        { id: 5, title: '도서이용정보', icon: 'book-open-variant' },
+        { id: 6, title: '이용안내', icon: 'file-document-edit-outline' },
+    ];
 
-const MENU_ITEMS: MenuItem[] = [
-    { id: 1, title: '통합자료검색' },
-    { id: 2, title: '신착자료' },
-    { id: 3, title: '대출현황' },
-    { id: 4, title: '열람실좌석현황' },
-    { id: 5, title: '수강신청' },
-    { id: 6, title: '전자도서관' },
-];
-
-const LandingPage: React.FC = () => {
     return (
         <SafeAreaView style={styles.container}>
-            <ScrollView contentContainerStyle={styles.scrollContent}>
-                {/* 상단 헤더 영역 */}
+            <ScrollView contentContainerStyle={styles.scrollContent} bounces={false}>
+                {/* 1. 상단 헤더 (logo1.png 적용) */}
                 <View style={styles.header}>
-                    <View style={styles.logoPlaceholder}>
-                        {/* 실제 로고 이미지가 있다면 Image 컴포넌트로 교체하세요 */}
-                        <View style={styles.logoCircle} />
+                    <TouchableOpacity>
+                        <Ionicons name="menu" size={28} color="#000" />
+                    </TouchableOpacity>
+                    <View style={styles.titleWrapper}>
+                        <Image
+                            source={require('@/assets/images/logo1.png')}
+                            style={styles.logo1}
+                            resizeMode="contain"
+                        />
+                        <Text style={styles.headerTitle}>성남시 도서관사업소</Text>
                     </View>
-                    <Text style={styles.headerTitle}>성남시 도서관사업소</Text>
+                    <TouchableOpacity>
+                        <Ionicons name="person-circle-outline" size={32} color="#000" />
+                    </TouchableOpacity>
                 </View>
 
-                {/* 메인 메뉴 영역 (육각형 그리드) */}
-                <View style={styles.menuGrid}>
-                    {MENU_ITEMS.map((item) => (
-                        <TouchableOpacity key={item.id} style={styles.menuItem}>
-                            <View style={styles.hexagon}>
-                                {/* 육각형 형태를 위해 clipPath나 이미지를 사용할 수 있지만, 
-                    여기서는 간단하게 테두리 박스로 표현했습니다. */}
-                                <View style={styles.hexagonInner} />
-                            </View>
-                            <Text style={styles.menuText}>{item.title}</Text>
-                        </TouchableOpacity>
-                    ))}
-                </View>
-
-                {/* 검색바 영역 */}
-                <View style={styles.searchContainer}>
-                    <View style={styles.searchBar}>
+                {/* 2. 검색 섹션 */}
+                <View style={styles.searchSection}>
+                    <View style={styles.searchBarContainer}>
                         <Text style={styles.searchLabel}>자료검색</Text>
                         <TextInput
                             style={styles.searchInput}
                             placeholder="검색어를 입력해주세요"
                             placeholderTextColor="#999"
                         />
-                        <TouchableOpacity>
-                            <Search size={24} color="#000" />
+                        <TouchableOpacity style={styles.searchButton}>
+                            <Ionicons name="search" size={22} color="#000" />
                         </TouchableOpacity>
                     </View>
                 </View>
 
-                {/* 하단 빈 공간 (추가 콘텐츠 영역) */}
-                <View style={styles.contentBody} />
-            </ScrollView>
+                {/* 3. 메뉴 그리드 (logo2.png를 배경으로 적용) */}
+                <ImageBackground
+                    source={require('@/assets/images/logo2.png')}
+                    style={styles.menuBackground}
+                    resizeMode="cover"
+                >
+                    <View style={styles.menuGrid}>
+                        {menuItems.map((item) => (
+                            <HexagonMenu key={item.id} icon={item.icon} title={item.title} />
+                        ))}
+                    </View>
+                </ImageBackground>
 
-            {/* 하단 네비게이션 탭 */}
-            <View style={styles.bottomTab}>
-                <TouchableOpacity style={styles.tabItem}>
-                    <Home size={28} color="#4A90E2" />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.tabItem}>
-                    <Calendar size={28} color="#CCC" />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.tabItem}>
-                    <User size={28} color="#CCC" />
-                </TouchableOpacity>
-            </View>
+                {/* 4. 하단 배너 영역 */}
+                <View style={styles.bottomBanner}>
+                    <View style={styles.bannerContent}>
+                        <Text style={styles.bannerText}>도서관 소식 및 공지사항</Text>
+                    </View>
+                </View>
+            </ScrollView>
         </SafeAreaView>
     );
-};
+}
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#FFFBE6', // 연한 노란색 배경
+        backgroundColor: '#FFFFFF',
     },
     scrollContent: {
         flexGrow: 1,
     },
     header: {
         flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'center',
-        padding: 20,
-        marginTop: 20,
+        paddingHorizontal: 20,
+        paddingTop: 15,
+        paddingBottom: 10,
     },
-    logoPlaceholder: {
-        marginRight: 10,
+    titleWrapper: {
+        flexDirection: 'row', // 로고와 텍스트 가로 배치
+        alignItems: 'center',
+        gap: 8,
     },
-    logoCircle: {
-        width: 40,
-        height: 40,
-        backgroundColor: '#4A90E2',
-        borderRadius: 20,
+    logo1: {
+        width: 30,
+        height: 30,
     },
     headerTitle: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: 'bold',
+        fontFamily: Fonts?.rounded || 'System',
         color: '#000',
+    },
+    searchSection: {
+        paddingHorizontal: 20,
+        marginVertical: 15,
+        zIndex: 10, // 배경 이미지보다 위에 오도록 설정
+    },
+    searchBarContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#FFFFFF',
+        borderRadius: 12,
+        paddingHorizontal: 15,
+        height: 50,
+        borderWidth: 1,
+        borderColor: '#F0F0F0',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.08,
+        shadowRadius: 8,
+        elevation: 3,
+    },
+    searchLabel: {
+        fontSize: 12,
+        color: '#777',
+        marginRight: 10,
+        fontWeight: '600',
+    },
+    searchInput: {
+        flex: 1,
+        fontSize: 14,
+        color: '#000',
+    },
+    searchButton: {
+        padding: 5,
+    },
+    menuBackground: {
+        width: '100%',
+        marginTop: 10,
     },
     menuGrid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'center',
-        paddingHorizontal: 10,
-        marginTop: 30,
+        justifyContent: 'space-between',
+        paddingHorizontal: 25,
+        paddingVertical: 20, // 배경 안에서의 여백
+        backgroundColor: 'rgba(255, 255, 255, 0.7)', // 사진이 너무 진하면 메뉴가 안 보일 수 있어 반투명 처리 (필요 없으면 삭제)
     },
     menuItem: {
-        width: width / 3 - 20,
+        width: '30%',
         alignItems: 'center',
-        marginBottom: 25,
+        marginBottom: 20,
     },
-    hexagon: {
-        width: 70,
-        height: 70,
-        borderWidth: 2,
-        borderColor: '#333',
+    hexagonWrapper: {
+        width: 80,
+        height: 85,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 8,
-        // 실제 완벽한 육각형을 구현하려면 SVG나 전용 라이브러리를 권장합니다.
-        transform: [{ rotate: '45deg' }],
-        borderRadius: 10,
     },
-    hexagonInner: {
-        width: '100%',
-        height: '100%',
+    hexagonSvg: {
+        position: 'absolute',
+    },
+    iconOverlay: {
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     menuText: {
-        fontSize: 14,
-        fontWeight: '600',
+        fontSize: 12,
+        fontWeight: '700',
+        color: '#333',
+        marginTop: 5,
         textAlign: 'center',
-        color: '#000',
     },
-    searchContainer: {
-        paddingHorizontal: 20,
-        marginTop: 20,
-    },
-    searchBar: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#FFF',
-        borderRadius: 25,
-        paddingHorizontal: 15,
-        height: 50,
-        borderWidth: 1,
-        borderColor: '#EEE',
-        elevation: 3, // Android 그림자
-        shadowColor: '#000', // iOS 그림자
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-    },
-    searchLabel: {
-        fontSize: 14,
-        color: '#666',
-        marginRight: 10,
-    },
-    searchInput: {
+    bottomBanner: {
         flex: 1,
-        fontSize: 15,
+        backgroundColor: '#FFFCB7',
+        marginTop: 10,
+        minHeight: 250,
+        borderTopLeftRadius: 30,
+        borderTopRightRadius: 30,
+        padding: 25,
     },
-    contentBody: {
-        flex: 1,
-        minHeight: 300,
+    bannerContent: {
+        borderLeftWidth: 4,
+        borderLeftColor: '#E6E200',
+        paddingLeft: 15,
     },
-    bottomTab: {
-        flexDirection: 'row',
-        height: 70,
-        backgroundColor: '#FFF',
-        borderTopWidth: 1,
-        borderTopColor: '#EEE',
-        justifyContent: 'space-around',
-        alignItems: 'center',
-        paddingBottom: 10,
-    },
-    tabItem: {
-        padding: 10,
+    bannerText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#555',
     },
 });
-
-export default LandingPage;

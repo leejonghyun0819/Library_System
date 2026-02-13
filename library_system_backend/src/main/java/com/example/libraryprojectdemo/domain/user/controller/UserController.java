@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController // @Controller + @ResponseBody -> HttpMessageConverter 작동! -> dto를 json으로 변환
+@RestController // @Controller + @ResponseBody -> @HttpMessageConverter 작동! (dto를 json으로 변환)
 // 그냥 @Controller는 view(화면) 찾으러 감
 @RequestMapping("/api/users")   // 모두 주소 앞에 반드시 이거 붙는다
 public class UserController {
@@ -22,7 +22,7 @@ public class UserController {
     // 회원가입
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED) //201
-    public UserResponse createUser(/*@Valid*/ @RequestBody UserCreateRequest req) {
+    public UserResponse createUser(@Valid @RequestBody UserCreateRequest req) {
         // requestbody : json 형태의 데이터를 java 객체에 매핑할 때 사용. 통신메세지의 body 부분 받아옴
         return userService.create(req);
     }

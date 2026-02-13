@@ -14,28 +14,8 @@ import java.util.List;
 @RequiredArgsConstructor    // 생성자 주입
 public class HomeController {
 
-    private final BookService bookService;
-
     @GetMapping("/")
     public String landingPage() {
         return "landingPage";
-    }
-
-    @GetMapping("/search")
-    public String searchPage(@RequestParam(required = false) String q, Model model) {
-        // 검색어 예외처리
-        if (q==null||q.trim().isEmpty()) {
-            return "searchPage";
-        }
-
-        String keyword = q.trim().toLowerCase();
-        if (keyword.length()>20){
-            throw new IllegalArgumentException("검색어가 너무 깁니다(최대 10자)");
-        }
-
-        List<BookDTO> searchResult = bookService.searchByTitle(q);
-        model.addAttribute("searchResult", searchResult);
-
-        return "searchPage";
     }
 }

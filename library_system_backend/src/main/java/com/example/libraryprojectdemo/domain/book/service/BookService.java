@@ -1,14 +1,13 @@
-package com.example.libraryprojectdemo.service;
+package com.example.libraryprojectdemo.domain.book.service;
 
-import com.example.libraryprojectdemo.dto.BookDTO;
-import com.example.libraryprojectdemo.entity.BookEntity;
-import com.example.libraryprojectdemo.repository.BookRepository;
+import com.example.libraryprojectdemo.domain.book.dto.BookDTO;
+import com.example.libraryprojectdemo.domain.book.entity.BookEntity;
+import com.example.libraryprojectdemo.domain.book.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

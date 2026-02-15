@@ -25,3 +25,4 @@ spring:
 jwt:
   secret: "sadfasdf2e2jnfjednsfkl23rn2ne318ne2kn3rfl2k3fnewkldfi2n3kn"
   access-exp-seconds: 1800  # 30분
+  refresh-exp-seconds: 1209600  # 14일

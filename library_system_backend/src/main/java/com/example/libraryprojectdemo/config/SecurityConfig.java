@@ -23,10 +23,10 @@ public class SecurityConfig {
 
                 // 지금 단계: API는 모두 열어둔다 (나중에 JWT 단계에서 잠글 것)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/login").permitAll()
-                        .requestMatchers("/api/users").permitAll()  // user CRUD 열어놓음
+                        .requestMatchers("/api/auth/login", "/api/auth/refresh", "/api/auth/logout").permitAll()
+                        .requestMatchers("/api/users/me").authenticated()   // 얘만 잠금 (회원정보 조회)
                         .requestMatchers("/api/users/**").permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
                 .addFilterBefore(new JwtAuthFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
 

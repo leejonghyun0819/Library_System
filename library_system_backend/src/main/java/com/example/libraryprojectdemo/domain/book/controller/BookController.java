@@ -18,7 +18,7 @@ public class BookController {
 
     // 책 검색
     @GetMapping("/search")
-    public List<BookDTO> searchBook(@RequestParam String query) {
+    public List<BookDTO> searchBook(@RequestParam String query) {   // parameter 이름 반드시 일치해야
         return bookService.searchByTitle(query);  // bookDto list 반환하도록
     }
 }

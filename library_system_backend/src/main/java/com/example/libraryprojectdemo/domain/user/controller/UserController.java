@@ -1,11 +1,13 @@
 package com.example.libraryprojectdemo.domain.user.controller;
 
+import com.example.libraryprojectdemo.global.exception.UnauthorizedException;
 import com.example.libraryprojectdemo.domain.user.dto.UserCreateRequest;
 import com.example.libraryprojectdemo.domain.user.dto.UserResponse;
 import com.example.libraryprojectdemo.domain.user.dto.UserUpdateRequest;
 import com.example.libraryprojectdemo.domain.user.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -51,4 +53,14 @@ public class UserController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@PathVariable Long id) { userService.delete(id); }
+
+    // 마이페이지
+    @GetMapping("/me")
+    public UserResponse me(Authentication authentication) { // springsecurity 에서 인증정보 담는 개념 - SecurityContext에 저장
+        if (authentication == null || authentication.getPrincipal() == null) {  // JwtAuthFilter 에서 저장했었음
+            throw new UnauthorizedException("로그인이 필요합니다.");
+        }
+        Long userId = (Long) authentication.getPrincipal(); // 인증된 사용자에 대한 정보를 제공하는 객체
+        return userService.findById(userId);
+    }
 }

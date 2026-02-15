@@ -1,4 +1,4 @@
-package com.example.libraryprojectdemo.global;
+package com.example.libraryprojectdemo.global.exception;
 
 import com.example.libraryprojectdemo.global.dto.ApiResponse;
 import org.springframework.http.HttpStatus;
@@ -11,6 +11,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiResponse<Void> badRequest(IllegalArgumentException e) {
+        return ApiResponse.fail(e.getMessage());
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ApiResponse<Void> unauthorized(UnauthorizedException e) {
         return ApiResponse.fail(e.getMessage());
     }
 }

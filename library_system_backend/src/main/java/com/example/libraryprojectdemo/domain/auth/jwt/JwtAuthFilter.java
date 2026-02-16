@@ -1,4 +1,4 @@
-package com.example.libraryprojectdemo.domain.jwt;
+package com.example.libraryprojectdemo.domain.auth.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

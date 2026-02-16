@@ -2,9 +2,7 @@ package com.example.libraryprojectdemo.domain.book.controller;
 
 import com.example.libraryprojectdemo.domain.book.dto.BookDTO;
 import com.example.libraryprojectdemo.domain.book.service.BookService;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 

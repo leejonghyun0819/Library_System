@@ -1,4 +1,4 @@
-package com.example.libraryprojectdemo.domain.jwt;
+package com.example.libraryprojectdemo.domain.auth.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -18,7 +18,7 @@ public class JwtProvider {  // yml 파일에 있는 시크릿키 가져와서 �
     private final long refreshExpSec;
     public JwtProvider(
             @Value("${jwt.secret}") String secret,
-            @Value("${jwt.access-exp-seconds:1800}") long accessExpSec,
+            @Value("${jwt.access-exp-seconds:900}") long accessExpSec,
             @Value("${jwt.refresh-exp-seconds:1209600}") long refreshExpSec // 14일 기본
              ) {
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes()); // byte 로 읽어와서 hash 후 저장

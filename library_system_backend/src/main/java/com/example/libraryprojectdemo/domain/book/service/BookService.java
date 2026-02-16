@@ -31,6 +31,7 @@ public class BookService {
 
         // db에서 책 조회
         List<BookEntity> bookEntityList = bookRepository.findByTitleContainingOrAuthorContaining(keyword, keyword);
+
         List<BookDTO> bookDTOList = new ArrayList<>();
         for (BookEntity bookEntity : bookEntityList) {
             bookDTOList.add(BookDTO.toBookDTO(bookEntity)); // static 함수 toBookDTO 각각 호출

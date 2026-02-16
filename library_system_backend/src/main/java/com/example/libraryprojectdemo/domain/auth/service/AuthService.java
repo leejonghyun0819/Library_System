@@ -3,8 +3,7 @@ package com.example.libraryprojectdemo.domain.auth.service;
 import com.example.libraryprojectdemo.domain.auth.dto.*;
 import com.example.libraryprojectdemo.domain.auth.entity.RefreshTokenEntity;
 import com.example.libraryprojectdemo.domain.auth.repository.RefreshTokenRepository;
-import com.example.libraryprojectdemo.domain.jwt.JwtProvider;
-import com.example.libraryprojectdemo.domain.user.dto.UserResponse;
+import com.example.libraryprojectdemo.domain.auth.jwt.JwtProvider;
 import com.example.libraryprojectdemo.domain.user.entity.UserEntity;
 import com.example.libraryprojectdemo.domain.user.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -69,6 +68,7 @@ public class AuthService {
 
         UserEntity user = saved.getUser();
 
+        // Rotation
         // 4. Rotation 핵심 : 기존 refresh 즉시 폐기 (rotate 자체가 access 뿐만 아니라 refresh도 재발급하는 개념!)
         refreshTokenRepository.deleteByToken(refreshToken);
         // 5. 새 토큰 발급 + 새 refresh 저장

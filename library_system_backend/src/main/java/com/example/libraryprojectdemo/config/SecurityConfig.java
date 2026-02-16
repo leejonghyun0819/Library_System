@@ -1,7 +1,7 @@
 package com.example.libraryprojectdemo.config;
 
-import com.example.libraryprojectdemo.domain.jwt.JwtAuthFilter;
-import com.example.libraryprojectdemo.domain.jwt.JwtProvider;
+import com.example.libraryprojectdemo.domain.auth.jwt.JwtAuthFilter;
+import com.example.libraryprojectdemo.domain.auth.jwt.JwtProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;

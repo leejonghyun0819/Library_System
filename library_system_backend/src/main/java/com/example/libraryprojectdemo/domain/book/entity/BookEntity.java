@@ -1,12 +1,10 @@
-package com.example.libraryprojectdemo.entity;
+package com.example.libraryprojectdemo.domain.book.entity;
 
-import com.example.libraryprojectdemo.dto.BookDTO;
+import com.example.libraryprojectdemo.domain.book.dto.BookDTO;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.awt.print.Book;
 
 @Entity
 @Getter

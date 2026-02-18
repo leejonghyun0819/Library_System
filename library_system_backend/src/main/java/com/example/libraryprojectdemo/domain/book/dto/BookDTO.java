@@ -1,16 +1,15 @@
-package com.example.libraryprojectdemo.dto;
+package com.example.libraryprojectdemo.domain.book.dto;
 
-import com.example.libraryprojectdemo.entity.BookEntity;
+import com.example.libraryprojectdemo.domain.book.entity.BookEntity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
-import java.awt.print.Book;
 
 @Getter
 @Setter
 @ToString
 public class BookDTO {
+
     private Long id;
     private String title;
     private String author;

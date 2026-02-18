@@ -1,0 +1,7 @@
+** BUILD FAILED **
+
+
+The following build commands failed:
+	ProcessInfoPlistFile /Users/jonghyunlee/Library/Developer/Xcode/DerivedData/newprojectfront-ddncjsiaewxtfpbblbajdcppghvt/Build/Products/Debug-iphonesimulator/newprojectfront.app/Info.plist /Users/jonghyunlee/Desktop/Library_System/library_system_frontend/ios/newprojectfront/Info.plist (in target 'newprojectfront' from project 'newprojectfront')
+	Building workspace newprojectfront with scheme newprojectfront and configuration Debug
+(2 failures)

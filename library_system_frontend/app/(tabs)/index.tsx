@@ -77,7 +77,7 @@ export default function LibraryMainScreen() {
 
                 {/* 3. 메뉴 그리드 (logo2.png를 배경으로 적용) */}
                 <ImageBackground
-                    source={require('@/assets/images/logo2.png')}
+                    source={require('@/assets/images/background.png')}
                     style={styles.menuBackground}
                     resizeMode="cover"
                 >

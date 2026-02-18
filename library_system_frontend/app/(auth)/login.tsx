@@ -173,11 +173,11 @@ const styles = StyleSheet.create({
     divider: { width: 1, height: 14, backgroundColor: '#ccc' },
 });
 
-/* 실제 백엔드 연동 시 사용할 코드 (예시)
-               const response = await fetch('http://백엔드주소/login', {
-                   method: 'POST',
-                   headers: { 'Content-Type': 'application/json' },
-                   body: JSON.stringify(loginData)
-               });
-               const result = await response.json();
-            */
+
+            //    const response = await fetch('http://백엔드주소/login', {
+            //        method: 'POST',
+            //        headers: { 'Content-Type': 'application/json' },
+            //        body: JSON.stringify(loginData)
+            //    });
+            //    const result = await response.json();
+

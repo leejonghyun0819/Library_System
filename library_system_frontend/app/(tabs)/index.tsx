@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react'; // 👈 useState 추가
 import {
     StyleSheet,
     View,
@@ -12,11 +12,12 @@ import {
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Svg, { Polygon } from 'react-native-svg';
+import { useRouter } from 'expo-router'; // 👈 화면 이동용 도구 추가
 import { Fonts } from '@/constants/theme';
 
-// 육각형 메뉴 아이템 컴포넌트
-const HexagonMenu = ({ icon, title }: { icon: string; title: string }) => (
-    <TouchableOpacity style={styles.menuItem}>
+// 🔽 육각형 메뉴 아이템 컴포넌트 (onPress 기능 추가)
+const HexagonMenu = ({ icon, title, onPress }: { icon: string; title: string; onPress?: () => void }) => (
+    <TouchableOpacity style={styles.menuItem} onPress={onPress}>
         <View style={styles.hexagonWrapper}>
             <Svg height="80" width="80" viewBox="0 0 100 100" style={styles.hexagonSvg}>
                 <Polygon points="50,5 95,25 95,75 50,95 5,75 5,25" fill="white" stroke="#EAEAEA" strokeWidth="2" />
@@ -30,6 +31,9 @@ const HexagonMenu = ({ icon, title }: { icon: string; title: string }) => (
 );
 
 export default function LibraryMainScreen() {
+    const router = useRouter(); // 👈 화면 이동 도구 꺼내기
+    const [searchText, setSearchText] = useState(""); // 👈 메인 화면 검색어 저장용 메모장
+
     const menuItems = [
         { id: 1, title: '통합자료검색', icon: 'magnify' },
         { id: 2, title: '신착자료', icon: 'book-plus-outline' },
@@ -42,7 +46,7 @@ export default function LibraryMainScreen() {
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContent} bounces={false}>
-                {/* 1. 상단 헤더 (logo1.png 적용) */}
+                {/* 1. 상단 헤더 */}
                 <View style={styles.header}>
                     <TouchableOpacity>
                         <Ionicons name="menu" size={28} color="#000" />
@@ -68,14 +72,20 @@ export default function LibraryMainScreen() {
                             style={styles.searchInput}
                             placeholder="검색어를 입력해주세요"
                             placeholderTextColor="#999"
+                            value={searchText} // 👈 검색어 연결
+                            onChangeText={setSearchText} // 👈 글자 칠 때마다 저장
+                            onSubmitEditing={() => router.push('/search-result')} // 👈 엔터 치면 이동
                         />
-                        <TouchableOpacity style={styles.searchButton}>
+                        <TouchableOpacity 
+                            style={styles.searchButton}
+                            onPress={() => router.push('/search-result')} // 👈 돋보기 누르면 이동
+                        >
                             <Ionicons name="search" size={22} color="#000" />
                         </TouchableOpacity>
                     </View>
                 </View>
 
-                {/* 3. 메뉴 그리드 (logo2.png를 배경으로 적용) */}
+                {/* 3. 메뉴 그리드 */}
                 <ImageBackground
                     source={require('@/assets/images/background.png')}
                     style={styles.menuBackground}
@@ -83,7 +93,17 @@ export default function LibraryMainScreen() {
                 >
                     <View style={styles.menuGrid}>
                         {menuItems.map((item) => (
-                            <HexagonMenu key={item.id} icon={item.icon} title={item.title} />
+                            <HexagonMenu 
+                                key={item.id} 
+                                icon={item.icon} 
+                                title={item.title} 
+                                onPress={() => {
+                                    // 👈 통합자료검색을 누르면 우리가 만든 화면으로 이동!
+                                    if (item.title === '통합자료검색') {
+                                        router.push('/search-result');
+                                    }
+                                }}
+                            />
                         ))}
                     </View>
                 </ImageBackground>
@@ -116,7 +136,7 @@ const styles = StyleSheet.create({
         paddingBottom: 10,
     },
     titleWrapper: {
-        flexDirection: 'row', // 로고와 텍스트 가로 배치
+        flexDirection: 'row',
         alignItems: 'center',
         gap: 8,
     },
@@ -133,7 +153,7 @@ const styles = StyleSheet.create({
     searchSection: {
         paddingHorizontal: 20,
         marginVertical: 15,
-        zIndex: 10, // 배경 이미지보다 위에 오도록 설정
+        zIndex: 10,
     },
     searchBarContainer: {
         flexDirection: 'row',
@@ -173,8 +193,8 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
         justifyContent: 'space-between',
         paddingHorizontal: 25,
-        paddingVertical: 20, // 배경 안에서의 여백
-        backgroundColor: 'rgba(255, 255, 255, 0.7)', // 사진이 너무 진하면 메뉴가 안 보일 수 있어 반투명 처리 (필요 없으면 삭제)
+        paddingVertical: 20,
+        backgroundColor: 'rgba(255, 255, 255, 0.7)',
     },
     menuItem: {
         width: '30%',

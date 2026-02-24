@@ -13,7 +13,7 @@ export default function RootLayout() {
     const router = useRouter();
 
     // [중요] 실제 로그인 상태를 담는 변수입니다.
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(true);//프리패스로 바꿔놓음 올릴때 바꿔야된다!
     const [isNavigationReady, setIsNavigationReady] = useState(false);
 
     // 레이아웃이 마운트(준비)되었는지 확인합니다.

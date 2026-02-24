@@ -27,15 +27,15 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="sidebar"
                 options={{
-                    title: 'Profile',
+                    title: 'Sidebar',
                     tabBarIcon: ({ color }) => <IconSymbol size={28} name="person" color={color} />,
                 }}
             />
             <Tabs.Screen
-                name="setting"
+                name="search"
                 options={{
-                    title: 'Setting',
-                    tabBarIcon: ({ color }) => <IconSymbol size={28} name="gear" color={color} />,
+                    title: 'Search',
+                    tabBarIcon: ({ color }) => <IconSymbol size={28} name="magnifyingglass" color={color} />,
                 }}
             />
         </Tabs>

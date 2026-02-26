@@ -98,6 +98,7 @@ export default function SearchResultScreen() {
     setCheckedItems(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
+  // 🚨 중복 체크 로직이 포함된 관심자료 담기 함수
   const handleSaveToInterest = async () => {
     const selectedIds = Object.keys(checkedItems).filter(id => checkedItems[id]);
     
@@ -109,17 +110,34 @@ export default function SearchResultScreen() {
     const selectedBooks = allBooks.filter(book => selectedIds.includes(book.id));
 
     try {
+      // 기존 데이터 불러오기
       const existingData = await AsyncStorage.getItem('interestBooks');
       let existingBooks: BookData[] = existingData ? JSON.parse(existingData) : [];
 
-      const combinedBooks = [...existingBooks, ...selectedBooks];
-      const uniqueBooks = Array.from(new Set(combinedBooks.map(b => b.id)))
-                               .map(id => combinedBooks.find(b => b.id === id));
+      // 🚨 중복 확인: 선택한 책들 중 이미 저장소에 있는 책이 있는지 검사
+      const alreadyAddedBooks = selectedBooks.filter(selected => 
+        existingBooks.some(existing => existing.id === selected.id)
+      );
 
-      await AsyncStorage.setItem('interestBooks', JSON.stringify(uniqueBooks));
+      if (alreadyAddedBooks.length > 0) {
+        // 중복된 책이 있으면 첫 번째 책 제목을 따와서 경고창 띄우기
+        const firstDuplicateTitle = alreadyAddedBooks[0].title;
+        const message = alreadyAddedBooks.length === 1 
+          ? `[${firstDuplicateTitle}] 도서는 이미 관심자료에 담겨 있습니다.`
+          : `이미 담겨 있는 도서가 ${alreadyAddedBooks.length}권 포함되어 있습니다.`;
+        
+        Alert.alert("알림", message);
+        return; // 저장을 진행하지 않고 중단
+      }
+
+      // 중복이 없으면 합치기
+      const combinedBooks = [...existingBooks, ...selectedBooks];
+
+      // 저장
+      await AsyncStorage.setItem('interestBooks', JSON.stringify(combinedBooks));
       
       Alert.alert("성공", `${selectedIds.length}권의 도서가 관심자료에 담겼습니다!`);
-      setCheckedItems({});
+      setCheckedItems({}); // 체크박스 초기화
     } catch (error) {
       Alert.alert("에러", "관심자료를 저장하는데 실패했습니다.");
     }

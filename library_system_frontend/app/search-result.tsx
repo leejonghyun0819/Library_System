@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Modal,
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface BookData {
   id: string; category: string; number: string; title: string; author: string; publisher: string; isbn: string;
@@ -34,7 +35,6 @@ export default function SearchResultScreen() {
       setSearchText(qValue);
       setSearchCategory(catValue);
 
-      // 🚨 전달받은 검색어가 2글자 이상일 때만 검색 완료 상태로 만듦
       if (qValue.trim().length >= 2) {
         setSubmittedText(qValue);
         setSubmittedCategory(catValue);
@@ -53,26 +53,16 @@ export default function SearchResultScreen() {
     { id: '5', category: '일반도서', number: '105', title: '개발자의 품격', author: '김개발', publisher: '가나출판사', isbn: '9788911111111' },
   ];
 
-  // 🚨 [수정됨] 결과 화면 내의 검색 실행 로직
   const handleSearch = () => {
     const cleanText = searchText.trim();
-    
-    // 비어있으면 목록 숨기기
     if (cleanText === "") {
         setHasSearched(false);
         return;
     }
-
-    // 2글자 미만이면 경고창 띄우기
     if (cleanText.length < 2) {
-        Alert.alert(
-            "알림", 
-            "검색어는 두 글자 이상 입력해주세요.", 
-            [{ text: "확인" }]
-        );
+        Alert.alert("알림", "검색어는 두 글자 이상 입력해주세요.", [{ text: "확인" }]);
         return;
     }
-
     setSubmittedText(searchText);
     setSubmittedCategory(searchCategory);
     setHasSearched(true);
@@ -80,17 +70,11 @@ export default function SearchResultScreen() {
 
   const filteredBooks = allBooks.filter((book) => {
     if (!hasSearched) return false;
-
-    // 쉼표(,)나 띄어쓰기 둘 중 하나라도 있으면 단어를 쪼갬 (다중 검색)
     const keywords = submittedText.toLowerCase().trim().split(/[,\s]+/);
-    
     const matchText = keywords.some(kw => {
       if (kw === "") return false; 
-
       if (submittedCategory === "전체") {
-        return book.title.toLowerCase().includes(kw) || 
-               book.author.toLowerCase().includes(kw) || 
-               book.publisher.toLowerCase().includes(kw);
+        return book.title.toLowerCase().includes(kw) || book.author.toLowerCase().includes(kw) || book.publisher.toLowerCase().includes(kw);
       } else if (submittedCategory === "서명") {
         return book.title.toLowerCase().includes(kw);
       } else if (submittedCategory === "저자") {
@@ -100,7 +84,6 @@ export default function SearchResultScreen() {
       }
       return false;
     });
-    
     const matchType = selectedType === "전체도서" || book.category === selectedType;
     return matchText && matchType;
   });
@@ -115,9 +98,35 @@ export default function SearchResultScreen() {
     setCheckedItems(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
+  const handleSaveToInterest = async () => {
+    const selectedIds = Object.keys(checkedItems).filter(id => checkedItems[id]);
+    
+    if (selectedIds.length === 0) {
+      Alert.alert("알림", "담을 도서를 먼저 체크해주세요.");
+      return;
+    }
+
+    const selectedBooks = allBooks.filter(book => selectedIds.includes(book.id));
+
+    try {
+      const existingData = await AsyncStorage.getItem('interestBooks');
+      let existingBooks: BookData[] = existingData ? JSON.parse(existingData) : [];
+
+      const combinedBooks = [...existingBooks, ...selectedBooks];
+      const uniqueBooks = Array.from(new Set(combinedBooks.map(b => b.id)))
+                               .map(id => combinedBooks.find(b => b.id === id));
+
+      await AsyncStorage.setItem('interestBooks', JSON.stringify(uniqueBooks));
+      
+      Alert.alert("성공", `${selectedIds.length}권의 도서가 관심자료에 담겼습니다!`);
+      setCheckedItems({});
+    } catch (error) {
+      Alert.alert("에러", "관심자료를 저장하는데 실패했습니다.");
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      
       <View style={styles.header}>
         <View style={styles.titleRow}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
@@ -128,8 +137,6 @@ export default function SearchResultScreen() {
       </View>
 
       <ScrollView style={{ flex: 1 }} keyboardShouldPersistTaps="handled">
-        
-        {/* 검색 섹션 */}
         <View style={styles.searchSection}>
           <View style={styles.searchBox}>
             <TouchableOpacity style={styles.searchDropdownBtn} onPress={() => setCategoryModalVisible(true)}>
@@ -146,7 +153,6 @@ export default function SearchResultScreen() {
 
         <View style={styles.divider} />
 
-        {/* 정렬 섹션 */}
         <View style={styles.sortSection}>
           <TouchableOpacity style={styles.sortBtn} onPress={() => setSortModalVisible(true)}>
             <Text style={styles.sortBtnText}>{selectedSort}</Text>
@@ -156,7 +162,6 @@ export default function SearchResultScreen() {
 
         <View style={styles.divider} />
 
-        {/* 라디오 버튼 */}
         <View style={styles.radioSection}>
           {["전체도서", "일반도서", "아동도서"].map((type) => (
             <TouchableOpacity key={type} style={styles.radioRow} onPress={() => setSelectedType(type)}>
@@ -170,19 +175,17 @@ export default function SearchResultScreen() {
 
         <View style={styles.divider} />
 
-        {/* 액션 버튼 */}
         <View style={styles.actionButtonSection}>
-          <TouchableOpacity style={styles.actionButton}>
+          <TouchableOpacity style={styles.actionButton} onPress={handleSaveToInterest}>
             <Text style={styles.actionButtonText}>관심자료담기</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton}>
+          <TouchableOpacity style={styles.actionButton} onPress={() => router.push('/interest-list')}>
             <Text style={styles.actionButtonText}>관심자료보기</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.divider} />
         
-        {/* 리스트 영역 */}
         <View style={styles.listSection}>
           {!hasSearched ? (
              <View style={styles.emptyContainer}>
@@ -201,11 +204,7 @@ export default function SearchResultScreen() {
                   <TouchableOpacity onPress={() => toggleCheck(item.id)} style={styles.checkboxTouchArea} hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}>
                     <Ionicons name={checkedItems[item.id] ? "checkbox" : "square-outline"} size={24} color={checkedItems[item.id] ? "#e5b05c" : "black"} />
                   </TouchableOpacity>
-                  
-                  <View style={styles.categoryBadge}>
-                    <Text style={styles.categoryBadgeText}>{item.category}</Text>
-                  </View>
-                  
+                  <View style={styles.categoryBadge}><Text style={styles.categoryBadgeText}>{item.category}</Text></View>
                   <Text style={styles.bookNumber}>{item.number}</Text>
                   <Text style={styles.bookTitle} numberOfLines={1}>{item.title}</Text>
                 </View>
@@ -225,7 +224,6 @@ export default function SearchResultScreen() {
         </View>
       </ScrollView>
 
-      {/* 모달 1: 검색 기준 선택 */}
       <Modal visible={isCategoryModalVisible} transparent={true} animationType="fade">
         <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setCategoryModalVisible(false)}>
           <View style={styles.modalContent}>
@@ -239,7 +237,6 @@ export default function SearchResultScreen() {
         </TouchableOpacity>
       </Modal>
 
-      {/* 모달 2: 정렬 기준 선택 */}
       <Modal visible={isSortModalVisible} transparent={true} animationType="fade">
         <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setSortModalVisible(false)}>
           <View style={styles.modalContent}>
@@ -252,7 +249,6 @@ export default function SearchResultScreen() {
           </View>
         </TouchableOpacity>
       </Modal>
-
     </SafeAreaView>
   );
 }
@@ -263,7 +259,6 @@ const styles = StyleSheet.create({
   titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
   backBtn: { position: 'absolute', left: 20 },
   headerTitle: { fontSize: 20, fontWeight: 'bold' },
-  
   searchSection: { padding: 15, alignItems: 'center' },
   searchBox: { flexDirection: 'row', width: '100%', height: 45, borderWidth: 2, borderColor: '#e5b05c', borderRadius: 5, backgroundColor: 'white' },
   searchDropdownBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: 75, height: '100%', borderRightWidth: 1, borderColor: '#ddd', gap: 5 },
@@ -271,11 +266,9 @@ const styles = StyleSheet.create({
   searchInput: { flex: 1, paddingHorizontal: 10, fontSize: 14 },
   searchBtnInner: { width: 50, backgroundColor: '#e5b05c', alignItems: 'center', justifyContent: 'center' },
   countText: { alignSelf: 'flex-start', marginLeft: 5, marginTop: 10, fontSize: 12 },
-  
   sortSection: { padding: 10, paddingLeft: 15 },
   sortBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#D9D9D9', width: 80, height: 25, justifyContent: 'center', gap: 5 },
   sortBtnText: { fontSize: 11, fontWeight: 'bold' },
-  
   divider: { height: 1, backgroundColor: '#000' },
   radioSection: { flexDirection: 'row', padding: 15, gap: 20, paddingLeft: 20 },
   radioRow: { flexDirection: 'row', alignItems: 'center', gap: 5 },
@@ -286,7 +279,6 @@ const styles = StyleSheet.create({
   actionButtonSection: { flexDirection: 'row', padding: 15, gap: 10 },
   actionButton: { backgroundColor: '#D9D9D9', paddingVertical: 5, paddingHorizontal: 10 },
   actionButtonText: { fontSize: 11, fontWeight: 'bold' },
-  
   listSection: { padding: 15 },
   bookItem: { marginBottom: 30 },
   bookTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10 },
@@ -300,10 +292,8 @@ const styles = StyleSheet.create({
   detailText: { fontSize: 12, color: '#555' },
   bookCoverPlaceholder: { width: 70, height: 100, backgroundColor: '#D9D9D9' },
   bottomGrayBox: { height: 40, backgroundColor: '#D9D9D9', marginTop: 15 },
-
   emptyContainer: { alignItems: 'center', justifyContent: 'center', paddingVertical: 60 },
   emptyText: { marginTop: 15, fontSize: 16, color: '#999', fontWeight: 'bold' },
-
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' },
   modalContent: { width: 250, backgroundColor: 'white', borderRadius: 10, padding: 20, elevation: 5 },
   modalTitle: { fontSize: 16, fontWeight: 'bold', textAlign: 'center', marginBottom: 15, paddingBottom: 10, borderBottomWidth: 1, borderColor: '#eee' },

@@ -19,4 +19,19 @@ public class BookDTO {
     private String isbn;
     private String imageurl;
     private BookStatus status;
+    private Long reservedByUserId;
+
+    public static BookDTO toBookDTO(BookEntity bookEntity) {
+        BookDTO bookDTO = new BookDTO();
+        bookDTO.setId(bookEntity.getId());
+        bookDTO.setTitle(bookEntity.getTitle());
+        bookDTO.setAuthor(bookEntity.getAuthor());
+        bookDTO.setPublisher(bookEntity.getPublisher());
+        bookDTO.setCategory(bookEntity.getCategory());
+        bookDTO.setIsbn(bookEntity.getIsbn());
+        bookDTO.setImageurl(bookEntity.getImageurl());
+        bookDTO.setStatus(bookEntity.getStatus());
+        bookDTO.setReservedByUserId(bookEntity.getReservedByUserId());
+        return bookDTO;
+    }
 }

@@ -20,22 +20,22 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="index"
                 options={{
-                    title: 'home',
+                    title: '홈',
                     tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
                 }}
             />
             <Tabs.Screen
                 name="profile"
                 options={{
-                    title: 'Profile',
-                    tabBarIcon: ({ color }) => <IconSymbol size={28} name="person" color={color} />,
+                    title: '프로필',
+                    tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.fill" color={color} />,
                 }}
             />
             <Tabs.Screen
                 name="setting"
                 options={{
-                    title: 'Setting',
-                    tabBarIcon: ({ color }) => <IconSymbol size={28} name="gear" color={color} />,
+                    title: '설정',
+                    tabBarIcon: ({ color }) => <IconSymbol size={28} name="gearshape.fill" color={color} />,
                 }}
             />
         </Tabs>

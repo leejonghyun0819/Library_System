@@ -1,50 +1,28 @@
-# Welcome to your Expo app 👋
+# Library System Frontend
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Expo React Native 기반 프론트엔드입니다.
 
-## Get started
-
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## 실행
 
 ```bash
-npm run reset-project
+npm install
+npx expo start -c
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+웹에서 먼저 확인하려면:
 
-## Learn more
+```bash
+npx expo start -c --web
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+## API 서버 주소
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+기본적으로 Expo host IP를 추정해서 `http://PC_IP:8080`으로 접속합니다.
 
-## Join the community
+직접 지정하려면 `.env` 파일을 만들고 아래처럼 입력하세요.
 
-Join our community of developers creating universal apps.
+```env
+EXPO_PUBLIC_API_BASE_URL=http://192.168.0.10:8080
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+백엔드 서버가 먼저 켜져 있어야 합니다.

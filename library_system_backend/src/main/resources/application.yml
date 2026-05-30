@@ -1,40 +1,25 @@
 server:
   port: 8080
   address: 0.0.0.0
+  servlet:
+    session:
+      cookie:
+        name: LIBRARY_SESSION
+        http-only: true
+        same-site: lax
+      timeout: 2h
 
 spring:
   application:
-    name: demo
+    name: library-system
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/db_library?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    #    db-codingrecipe : db
-    username: user_library
-    #    user-codingrecipe : user
-    password: 1234
-  thymeleaf:
-    cache: false
-
+    url: ${DB_URL:jdbc:mysql://localhost:3306/db_library?serverTimezone=Asia/Seoul&characterEncoding=UTF-8}
+    username: ${DB_USERNAME:user_library}
+    password: ${DB_PASSWORD:1234}
   jpa:
     open-in-view: false
     show-sql: true
     hibernate:
       ddl-auto: update
       format_sql: true
-
-
-jwt:
-  secret: "sadfasdf2e2jnfjednsfkl23rn2ne318ne2kn3rfl2k3fnewkldfi2n3kn"
-  access-exp-seconds: 900  # 15분
-  refresh-exp-seconds: 1209600  # 14일
-
-oauth:
-  kakao:
-    client-id: "KAKAO_REST_API_KEY"
-    client-secret: ""        # 사용하는 경우만
-  naver:
-    client-id: "NAVER_CLIENT_ID"
-    client-secret: "NAVER_CLIENT_SECRET"
-  google:
-    client-id: "GOOGLE_CLIENT_ID"
-    client-secret: "GOOGLE_CLIENT_SECRET"

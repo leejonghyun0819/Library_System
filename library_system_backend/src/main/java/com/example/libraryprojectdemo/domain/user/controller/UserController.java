@@ -1,66 +1,103 @@
 package com.example.libraryprojectdemo.domain.user.controller;
 
-import com.example.libraryprojectdemo.global.exception.UnauthorizedException;
+import com.example.libraryprojectdemo.domain.auth.SessionConst;
 import com.example.libraryprojectdemo.domain.user.dto.UserCreateRequest;
 import com.example.libraryprojectdemo.domain.user.dto.UserResponse;
 import com.example.libraryprojectdemo.domain.user.dto.UserUpdateRequest;
 import com.example.libraryprojectdemo.domain.user.service.UserService;
+import com.example.libraryprojectdemo.global.exception.UnauthorizedException;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController // @Controller + @ResponseBody -> @HttpMessageConverter 작동! (dto를 json으로 변환)
-// 그냥 @Controller는 view(화면) 찾으러 감
-@RequestMapping("/api/users")   // 모두 주소 앞에 반드시 이거 붙는다
+@RestController
+@RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
+
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
-    // 회원가입
+    // 회원가입은 로그인 전에도 가능해야 하므로 공개 API입니다.
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED) //201
+    @ResponseStatus(HttpStatus.CREATED)
     public UserResponse createUser(@Valid @RequestBody UserCreateRequest req) {
-        // requestbody : json 형태의 데이터를 java 객체에 매핑할 때 사용. 통신메세지의 body 부분 받아옴
         return userService.create(req);
     }
 
+    // 현재 로그인한 사용자 정보 조회
+    @GetMapping("/me")
+    public UserResponse me(HttpSession session) {
+        Long userId = getLoginUserId(session);
+        return userService.findById(userId);
+    }
 
-    // 회원 목록 조회 - 일단 구현
+    // 현재 로그인한 사용자 정보 수정
+    @PatchMapping("/me")
+    public UserResponse updateMe(@Valid @RequestBody UserUpdateRequest req, HttpSession session) {
+        Long userId = getLoginUserId(session);
+        return userService.update(userId, req);
+    }
+
+    // 현재 로그인한 사용자 탈퇴
+    @DeleteMapping("/me")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteMe(HttpSession session) {
+        Long userId = getLoginUserId(session);
+        userService.delete(userId);
+        session.invalidate();
+    }
+
+    // 개발 확인용 사용자 목록입니다. 실서비스에서는 관리자 권한을 붙여야 합니다.
     @GetMapping
-    public List<UserResponse> findAll() {
+    public List<UserResponse> findAll(HttpSession session) {
+        getLoginUserId(session);
         return userService.findAll();
     }
-    // 회원 단건 조회 - 일단 구현
+
+    // 본인 정보만 id로 조회할 수 있게 제한했습니다.
     @GetMapping("/{id}")
-    public UserResponse findById(@PathVariable Long id) {
-        return userService.findById(id);    // UserResponse 객체 리턴 -> json 형태로 전송?
+    public UserResponse findById(@PathVariable Long id, HttpSession session) {
+        Long loginUserId = getLoginUserId(session);
+        if (!loginUserId.equals(id)) {
+            throw new UnauthorizedException("본인 정보만 조회할 수 있습니다.");
+        }
+        return userService.findById(id);
     }
 
-
-    // 회원 수정
+    // 본인 정보만 수정할 수 있게 제한했습니다.
     @PatchMapping("/{id}")
     public UserResponse updateUser(@PathVariable Long id,
-                                   @Valid @RequestBody UserUpdateRequest req) {
+                                   @Valid @RequestBody UserUpdateRequest req,
+                                   HttpSession session) {
+        Long loginUserId = getLoginUserId(session);
+        if (!loginUserId.equals(id)) {
+            throw new UnauthorizedException("본인 정보만 수정할 수 있습니다.");
+        }
         return userService.update(id, req);
     }
 
-    // 회원 삭제
+    // 본인 계정만 삭제할 수 있게 제한했습니다.
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@PathVariable Long id) { userService.delete(id); }
+    public void deleteUser(@PathVariable Long id, HttpSession session) {
+        Long loginUserId = getLoginUserId(session);
+        if (!loginUserId.equals(id)) {
+            throw new UnauthorizedException("본인 계정만 삭제할 수 있습니다.");
+        }
+        userService.delete(id);
+        session.invalidate();
+    }
 
-    // 마이페이지
-    @GetMapping("/me")
-    public UserResponse me(Authentication authentication) { // springsecurity 에서 인증정보 담는 개념 - SecurityContext에 저장
-        if (authentication == null || authentication.getPrincipal() == null) {  // JwtAuthFilter 에서 저장했었음
+    private Long getLoginUserId(HttpSession session) {
+        Object value = session.getAttribute(SessionConst.LOGIN_USER_ID);
+        if (!(value instanceof Long userId)) {
             throw new UnauthorizedException("로그인이 필요합니다.");
         }
-        Long userId = (Long) authentication.getPrincipal(); // 인증된 사용자에 대한 정보를 제공하는 객체
-        return userService.findById(userId);
+        return userId;
     }
 }
